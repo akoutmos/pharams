@@ -63,134 +63,6 @@ defmodule Pharams do
     end
   end
 
-  defp normalize_field_type({:__aliases__, _line_info, module_type}) do
-    "#{inspect(Module.concat(module_type))}"
-  end
-
-  defp normalize_field_type(type), do: "#{inspect(type)}"
-
-  defp generate_schema_entry({_, _, [field_name, type, opts]}) do
-    default = Keyword.get(opts, :default)
-
-    if default do
-      "field(#{inspect(field_name)}, #{normalize_field_type(type)}, default: #{inspect(default)})"
-    else
-      "field(#{inspect(field_name)}, #{normalize_field_type(type)})"
-    end
-  end
-
-  defp generate_validate_acceptance(field_name, opts) do
-    "|> validate_acceptance(#{inspect(field_name)}, #{inspect(opts)})"
-  end
-
-  # TODO: Add validate_change
-
-  defp generate_validate_confirmation(field_name, opts) do
-    "|> validate_confirmation(#{inspect(field_name)}, #{inspect(opts)})"
-  end
-
-  defp generate_validate_exclusion(field_name, data, opts) when is_tuple(data) do
-    data = Macro.to_string(data)
-
-    "|> validate_exclusion(#{inspect(field_name)}, #{data}, #{inspect(opts)})"
-  end
-
-  defp generate_validate_exclusion(field_name, data, opts) do
-    "|> validate_exclusion(#{inspect(field_name)}, #{inspect(data)}, #{inspect(opts)})"
-  end
-
-  defp generate_validate_format(field_name, format, opts) do
-    format =
-      format
-      |> Macro.to_string()
-      |> Macro.unescape_string()
-
-    "|> validate_format(#{inspect(field_name)}, #{format}, #{inspect(opts)})"
-  end
-
-  defp generate_validate_inclusion(field_name, data, opts) when is_tuple(data) do
-    data = Macro.to_string(data)
-
-    "|> validate_inclusion(#{inspect(field_name)}, #{data}, #{inspect(opts)})"
-  end
-
-  defp generate_validate_inclusion(field_name, data, opts) do
-    "|> validate_inclusion(#{inspect(field_name)}, #{inspect(data)}, #{inspect(opts)})"
-  end
-
-  defp generate_validate_length(field_name, opts) do
-    "|> validate_length(#{inspect(field_name)}, #{inspect(opts)})"
-  end
-
-  defp generate_validate_number(field_name, opts) do
-    "|> validate_number(#{inspect(field_name)}, #{inspect(opts)})"
-  end
-
-  defp generate_validate_subset(field_name, data, opts) when is_tuple(data) do
-    data = Macro.to_string(data)
-
-    "|> validate_subset(#{inspect(field_name)}, #{data}, #{inspect(opts)})"
-  end
-
-  defp generate_validate_subset(field_name, data, opts) do
-    "|> validate_subset(#{inspect(field_name)}, #{inspect(data)}, #{inspect(opts)})"
-  end
-
-  defp generate_changeset_validation_entries({_, _, [field_name, _type, opts]}) do
-    Enum.map(
-      opts,
-      fn
-        # Ecto.Changeset.validate_acceptance
-        {:acceptance, opts} ->
-          generate_validate_acceptance(field_name, opts)
-
-        # Ecto.Changeset.validate_
-        {:confirmation, opts} ->
-          generate_validate_confirmation(field_name, opts)
-
-        # Ecto.Changeset.validate_
-        {:exclusion, [data, opts]} when is_list(data) and is_list(opts) ->
-          generate_validate_exclusion(field_name, data, opts)
-
-        {:exclusion, data} ->
-          generate_validate_exclusion(field_name, data, [])
-
-        # Ecto.Changeset.validate_
-        {:format, [format, opts]} when is_list(format) and is_list(opts) ->
-          generate_validate_format(field_name, format, opts)
-
-        {:format, format} ->
-          generate_validate_format(field_name, format, [])
-
-        # Ecto.Changeset.validate_
-        {:inclusion, [data, opts]} when is_list(data) and is_list(opts) ->
-          generate_validate_inclusion(field_name, data, opts)
-
-        {:inclusion, data} ->
-          generate_validate_inclusion(field_name, data, [])
-
-        # Ecto.Changeset.validate_
-        {:length, opts} ->
-          generate_validate_length(field_name, opts)
-
-        # Ecto.Changeset.validate_
-        {:number, opts} ->
-          generate_validate_number(field_name, opts)
-
-        # Ecto.Changeset.validate_
-        {:subset, [data, opts]} when is_list(data) and is_list(opts) ->
-          generate_validate_subset(field_name, data, opts)
-
-        {:subset, data} ->
-          generate_validate_subset(field_name, data, [])
-
-        # Unsupported validation method
-        _ ->
-          nil
-      end
-    )
-  end
-
   defp generate_validation({:__block__, [], block_contents}) do
     IO.inspect(block_contents)
 
@@ -200,7 +72,7 @@ defmodule Pharams do
       end)
       |> IO.inspect(label: "Fields")
 
-    root_field_declarations = Enum.map(basic_fields, &generate_schema_entry/1)
+    root_field_declarations = Enum.map(basic_fields, &Pharams.SchemaUtils.generate_schema_entry/1)
 
     root_fields =
       Enum.map(basic_fields, fn {_req, _line, [field, _type, _opts]} ->
@@ -219,9 +91,17 @@ defmodule Pharams do
 
     root_validations =
       basic_fields
-      |> Enum.map(&generate_changeset_validation_entries/1)
+      |> Enum.map(&Pharams.ValidationUtils.generate_changeset_validation_entries/1)
       |> List.flatten()
       |> Enum.reject(fn entry -> entry == nil end)
+
+    root_sub_schema_casts = []
+    # Enum.map(group_fields, fn ->
+    #  nil
+    # end)
+
+    group_schema_changesets = []
+    root_group_declarations = []
 
     module =
       [
@@ -231,6 +111,7 @@ defmodule Pharams do
         "@primary_key false",
         "embedded_schema do",
         root_field_declarations,
+        root_group_declarations,
         "end",
         "",
         "def changeset(schema, params) do",
@@ -238,12 +119,17 @@ defmodule Pharams do
         "|> cast(params, #{inspect(root_fields)})",
         "|> validate_required(#{inspect(root_required_fields)})",
         root_validations,
-        "end"
+        root_sub_schema_casts,
+        "end",
+        "",
+        group_schema_changesets
       ]
       |> List.flatten()
       |> Enum.join("\n")
 
-    IO.puts(module)
+    module
+    |> Code.format_string!()
+    |> IO.puts()
 
     module
     |> Code.string_to_quoted!()
