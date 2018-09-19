@@ -74,7 +74,8 @@ defmodule Pharams do
     root_validations = PharamsUtils.generate_basic_field_validations(block_contents)
 
     root_group_declarations = PharamsUtils.generate_group_field_schema_definitions(block_contents)
-    root_sub_schema_casts = []
+    root_sub_schema_casts = PharamsUtils.generate_group_field_schema_casts(block_contents)
+    # PharamsUtils.generate_group_field_schema_changesets(block_contents)
     group_schema_changesets = []
 
     module =

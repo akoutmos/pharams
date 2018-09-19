@@ -1,4 +1,11 @@
 defmodule Pharams.ValidationUtils do
+  def generate_group_field_schema_cast_entries({required, _line, [field, _quantity, _opts]}) do
+    required = required == :required
+    field_name = Atom.to_string(field)
+
+    "|> cast_embed(#{inspect(field)}, with: &#{field_name}_changeset/2, required: #{required})"
+  end
+
   def generate_changeset_validation_entries({_, _, [field_name, _type, opts]}) do
     Enum.map(
       opts,
