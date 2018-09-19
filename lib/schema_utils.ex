@@ -10,7 +10,7 @@ defmodule Pharams.SchemaUtils do
       |> Macro.camelize()
 
     [
-      "embeds_many #{inspect(sub_schema_name)}, #{module_name} do",
+      "embeds_many #{inspect(sub_schema_name)}, #{module_name}, primary_key: false do",
       PharamsUtils.generate_basic_field_schema_definitions(block_contents),
       PharamsUtils.generate_group_field_schema_definitions(block_contents),
       "end"
@@ -27,7 +27,7 @@ defmodule Pharams.SchemaUtils do
       |> Macro.camelize()
 
     [
-      "embeds_one #{inspect(sub_schema_name)}, #{module_name} do",
+      "embeds_one #{inspect(sub_schema_name)}, #{module_name}, primary_key: false  do",
       PharamsUtils.generate_basic_field_schema_definitions(block_contents),
       PharamsUtils.generate_group_field_schema_definitions(block_contents),
       "end"

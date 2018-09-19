@@ -5,14 +5,27 @@ defmodule Pharams do
 
   alias Pharams.PharamsUtils
 
-  def recusrive_map_from_struct(map) do
+  def pharams_schema_to_map(map) when is_map(map) do
     map
     |> Map.from_struct()
     |> Enum.map(fn
-      {key, %{__struct__: _} = value} -> {key, recusrive_map_from_struct(value)}
-      key_val -> key_val
+      {key, %{__struct__: _} = value} ->
+        {key, pharams_schema_to_map(value)}
+
+      {key, val} when is_list(val) ->
+        {key,
+         Enum.map(val, fn entry ->
+           pharams_schema_to_map(entry)
+         end)}
+
+      key_val ->
+        key_val
     end)
     |> Map.new()
+  end
+
+  def pharams_schema_to_map(val) do
+    val
   end
 
   defmacro __using__(opts) do
@@ -46,7 +59,7 @@ defmodule Pharams do
           new_params =
             changeset
             |> apply_changes()
-            |> Pharams.recusrive_map_from_struct()
+            |> Pharams.pharams_schema_to_map()
 
           %{conn | params: new_params}
         else
@@ -66,8 +79,6 @@ defmodule Pharams do
   end
 
   defp generate_validation({:__block__, [], block_contents}) do
-    # IO.inspect(block_contents)
-
     root_field_declarations = PharamsUtils.generate_basic_field_schema_definitions(block_contents)
     root_fields = PharamsUtils.get_all_basic_fields(block_contents)
     root_required_fields = PharamsUtils.get_required_basic_fields(block_contents)

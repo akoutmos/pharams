@@ -64,16 +64,20 @@ defmodule Pharams.PharamsUtils do
     |> Enum.map(&SchemaUtils.generate_schema_entry/1)
   end
 
-  def generate_group_field_schema_casts(ast) do
+  def generate_group_field_schema_casts(ast, parent \\ nil) do
     ast
     |> get_group_field_asts()
-    |> Enum.map(&ValidationUtils.generate_group_field_schema_cast_entries/1)
+    |> Enum.map(fn entry ->
+      ValidationUtils.generate_group_field_schema_cast_entries(entry, parent)
+    end)
   end
 
-  def generate_group_field_schema_changesets(ast) do
+  def generate_group_field_schema_changesets(ast, parent \\ nil) do
     ast
     |> get_group_field_asts()
-    |> Enum.map(&ValidationUtils.generate_group_field_schema_changeset_entries/1)
+    |> Enum.map(fn entry ->
+      ValidationUtils.generate_group_field_schema_changeset_entries(entry, parent)
+    end)
   end
 
   def generate_basic_field_validations(ast) do
