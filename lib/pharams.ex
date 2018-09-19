@@ -3,6 +3,8 @@ defmodule Pharams do
   Documentation for Pharams.
   """
 
+  alias Pharams.PharamsUtils
+
   def recusrive_map_from_struct(map) do
     map
     |> Map.from_struct()
@@ -66,42 +68,14 @@ defmodule Pharams do
   defp generate_validation({:__block__, [], block_contents}) do
     IO.inspect(block_contents)
 
-    {basic_fields, group_fields} =
-      Enum.split_with(block_contents, fn {_req, _line, [_field, _type, opts]} ->
-        not Keyword.has_key?(opts, :do)
-      end)
-      |> IO.inspect(label: "Fields")
+    root_field_declarations = PharamsUtils.generate_basic_field_schema_definitions(block_contents)
+    root_fields = PharamsUtils.get_all_basic_fields(block_contents)
+    root_required_fields = PharamsUtils.get_required_basic_fields(block_contents)
+    root_validations = PharamsUtils.generate_basic_field_validations(block_contents)
 
-    root_field_declarations = Enum.map(basic_fields, &Pharams.SchemaUtils.generate_schema_entry/1)
-
-    root_fields =
-      Enum.map(basic_fields, fn {_req, _line, [field, _type, _opts]} ->
-        field
-      end)
-
-    root_required_fields =
-      basic_fields
-      |> Enum.filter(fn
-        {:required, _line, [_field, _type, opts]} when is_list(opts) -> true
-        _ -> false
-      end)
-      |> Enum.map(fn {_req, _line, [field, _type, _opts]} ->
-        field
-      end)
-
-    root_validations =
-      basic_fields
-      |> Enum.map(&Pharams.ValidationUtils.generate_changeset_validation_entries/1)
-      |> List.flatten()
-      |> Enum.reject(fn entry -> entry == nil end)
-
+    root_group_declarations = PharamsUtils.generate_group_field_schema_definitions(block_contents)
     root_sub_schema_casts = []
-    # Enum.map(group_fields, fn ->
-    #  nil
-    # end)
-
     group_schema_changesets = []
-    root_group_declarations = []
 
     module =
       [

@@ -1,0 +1,63 @@
+defmodule Pharams.PharamsUtils do
+  def split_basic_and_group_fields(ast) do
+    Enum.split_with(ast, fn
+      {_req, _line, [_field, _type, opts]} ->
+        not Keyword.has_key?(opts, :do)
+
+      {_req, _line, [_field, _type]} ->
+        true
+    end)
+  end
+
+  def get_basic_field_asts(ast) do
+    {basic_fields, _group_fields} = split_basic_and_group_fields(ast)
+
+    basic_fields
+  end
+
+  def get_group_field_asts(ast) do
+    {_basic_fields, group_fields} = split_basic_and_group_fields(ast)
+
+    group_fields
+  end
+
+  def get_all_basic_fields(ast) do
+    ast
+    |> get_basic_field_asts()
+    |> Enum.map(fn {_req, _line, [field, _type, _opts]} ->
+      field
+    end)
+  end
+
+  def get_required_basic_fields(ast) do
+    ast
+    |> get_basic_field_asts()
+    |> Enum.filter(fn
+      {:required, _line, [_field, _type, opts]} when is_list(opts) -> true
+      _ -> false
+    end)
+    |> Enum.map(fn {_req, _line, [field, _type, _opts]} ->
+      field
+    end)
+  end
+
+  def generate_basic_field_schema_definitions(ast) do
+    ast
+    |> get_basic_field_asts()
+    |> Enum.map(&Pharams.SchemaUtils.generate_schema_entry/1)
+  end
+
+  def generate_group_field_schema_definitions(ast) do
+    ast
+    |> get_group_field_asts()
+    |> Enum.map(&Pharams.SchemaUtils.generate_schema_entry/1)
+  end
+
+  def generate_basic_field_validations(ast) do
+    ast
+    |> get_basic_field_asts()
+    |> Enum.map(&Pharams.ValidationUtils.generate_changeset_validation_entries/1)
+    |> List.flatten()
+    |> Enum.reject(fn entry -> entry == nil end)
+  end
+end
