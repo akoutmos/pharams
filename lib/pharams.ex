@@ -66,7 +66,7 @@ defmodule Pharams do
   end
 
   defp generate_validation({:__block__, [], block_contents}) do
-    IO.inspect(block_contents)
+    # IO.inspect(block_contents)
 
     root_field_declarations = PharamsUtils.generate_basic_field_schema_definitions(block_contents)
     root_fields = PharamsUtils.get_all_basic_fields(block_contents)
@@ -75,8 +75,7 @@ defmodule Pharams do
 
     root_group_declarations = PharamsUtils.generate_group_field_schema_definitions(block_contents)
     root_sub_schema_casts = PharamsUtils.generate_group_field_schema_casts(block_contents)
-    # PharamsUtils.generate_group_field_schema_changesets(block_contents)
-    group_schema_changesets = []
+    group_schema_changesets = PharamsUtils.generate_group_field_schema_changesets(block_contents)
 
     module =
       [

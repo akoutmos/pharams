@@ -1,4 +1,43 @@
 defmodule Pharams.ValidationUtils do
+  alias Pharams.PharamsUtils
+
+  def generate_group_field_schema_changeset_entries(
+        {_, _, [sub_schema_name, count, [do: {:__block__, [], block_contents}]]}
+      ) do
+    schema_name = Atom.to_string(sub_schema_name)
+
+    root_fields = PharamsUtils.get_all_basic_fields(block_contents)
+
+    root_required_fields =
+      PharamsUtils.get_required_basic_fields(block_contents |> IO.inspect(label: "wtf"))
+
+    root_validations = PharamsUtils.generate_basic_field_validations(block_contents)
+    root_sub_schema_casts = PharamsUtils.generate_group_field_schema_casts(block_contents)
+    group_schema_changesets = PharamsUtils.generate_group_field_schema_changesets(block_contents)
+
+    [
+      "def #{schema_name}_changeset(schema, params) do",
+      "schema",
+      "|> cast(params, #{inspect(root_fields)})",
+      "|> validate_required(#{inspect(root_required_fields)})",
+      root_validations,
+      root_sub_schema_casts,
+      "end",
+      "",
+      group_schema_changesets
+    ]
+    |> List.flatten()
+    |> Enum.join("\n")
+  end
+
+  def generate_group_field_schema_changeset_entries(
+        {required, line, [sub_schema_name, count, [do: single_ast]]}
+      ) do
+    generate_group_field_schema_changeset_entries(
+      {required, line, [sub_schema_name, count, [do: {:__block__, [], [single_ast]}]]}
+    )
+  end
+
   def generate_group_field_schema_cast_entries({required, _line, [field, _quantity, _opts]}) do
     required = required == :required
     field_name = Atom.to_string(field)
@@ -66,6 +105,10 @@ defmodule Pharams.ValidationUtils do
           nil
       end
     )
+  end
+
+  def generate_changeset_validation_entries({_, _, [_field_name, _type]}) do
+    nil
   end
 
   defp generate_validate_acceptance(field_name, opts) do

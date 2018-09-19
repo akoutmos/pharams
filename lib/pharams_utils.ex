@@ -26,8 +26,12 @@ defmodule Pharams.PharamsUtils do
   def get_all_basic_fields(ast) do
     ast
     |> get_basic_field_asts()
-    |> Enum.map(fn {_req, _line, [field, _type, _opts]} ->
-      field
+    |> Enum.map(fn
+      {_req, _line, [field, _type, _opts]} ->
+        field
+
+      {_req, _line, [field, _type]} ->
+        field
     end)
   end
 
@@ -36,10 +40,15 @@ defmodule Pharams.PharamsUtils do
     |> get_basic_field_asts()
     |> Enum.filter(fn
       {:required, _line, [_field, _type, opts]} when is_list(opts) -> true
+      {:required, _line, [_field, _type]} -> true
       _ -> false
     end)
-    |> Enum.map(fn {_req, _line, [field, _type, _opts]} ->
-      field
+    |> Enum.map(fn
+      {_req, _line, [field, _type, _opts]} ->
+        field
+
+      {_req, _line, [field, _type]} ->
+        field
     end)
   end
 
@@ -59,6 +68,12 @@ defmodule Pharams.PharamsUtils do
     ast
     |> get_group_field_asts()
     |> Enum.map(&ValidationUtils.generate_group_field_schema_cast_entries/1)
+  end
+
+  def generate_group_field_schema_changesets(ast) do
+    ast
+    |> get_group_field_asts()
+    |> Enum.map(&ValidationUtils.generate_group_field_schema_changeset_entries/1)
   end
 
   def generate_basic_field_validations(ast) do
