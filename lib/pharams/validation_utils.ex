@@ -4,7 +4,7 @@ defmodule Pharams.ValidationUtils do
   alias Pharams.Utils
 
   def generate_group_field_schema_changeset_entries(
-        {_, _, [sub_schema_name, count, [do: {:__block__, [], block_contents}]]},
+        {_, _, [sub_schema_name, _count, [do: {:__block__, [], block_contents}]]},
         parent
       ) do
     schema_name = Atom.to_string(sub_schema_name)
@@ -59,7 +59,6 @@ defmodule Pharams.ValidationUtils do
         parent
       ) do
     required = required == :required
-    field_name = Atom.to_string(field)
 
     changeset_root_name =
       if parent do

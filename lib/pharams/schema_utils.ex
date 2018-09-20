@@ -53,7 +53,7 @@ defmodule Pharams.SchemaUtils do
     end
   end
 
-  def generate_schema_entry({_, _, [field_name, type]} = thing) do
+  def generate_schema_entry({_, _, [field_name, type]}) do
     "field(#{inspect(field_name)}, #{normalize_field_type(type)})"
   end
 
