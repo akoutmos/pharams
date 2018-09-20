@@ -1,5 +1,5 @@
 defmodule Pharams.ValidationUtils do
-  alias Pharams.PharamsUtils
+  alias Pharams.Utils
 
   def generate_group_field_schema_changeset_entries(
         {_, _, [sub_schema_name, count, [do: {:__block__, [], block_contents}]]},
@@ -14,15 +14,15 @@ defmodule Pharams.ValidationUtils do
         "#{schema_name}"
       end
 
-    root_fields = PharamsUtils.get_all_basic_fields(block_contents)
-    root_required_fields = PharamsUtils.get_required_basic_fields(block_contents)
-    root_validations = PharamsUtils.generate_basic_field_validations(block_contents)
+    root_fields = Utils.get_all_basic_fields(block_contents)
+    root_required_fields = Utils.get_required_basic_fields(block_contents)
+    root_validations = Utils.generate_basic_field_validations(block_contents)
 
     root_sub_schema_casts =
-      PharamsUtils.generate_group_field_schema_casts(block_contents, changeset_root_name)
+      Utils.generate_group_field_schema_casts(block_contents, changeset_root_name)
 
     group_schema_changesets =
-      PharamsUtils.generate_group_field_schema_changesets(
+      Utils.generate_group_field_schema_changesets(
         block_contents,
         changeset_root_name
       )

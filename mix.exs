@@ -11,6 +11,10 @@ defmodule Pharams.MixProject do
       homepage_url: "https://hex.pm/packages/pharam",
       description: "Validate parameters in Phoenix with ease using Ecto.Schema",
       start_permanent: Mix.env() == :prod,
+      docs: [
+        main: "readme",
+        extras: ["README.md"]
+      ],
       package: package(),
       deps: deps()
     ]

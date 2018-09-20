@@ -1,4 +1,4 @@
-defmodule Pharams.PharamsUtils do
+defmodule Pharams.Utils do
   alias Pharams.{SchemaUtils, ValidationUtils}
 
   def split_basic_and_group_fields(ast) do

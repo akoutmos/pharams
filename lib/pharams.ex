@@ -3,7 +3,7 @@ defmodule Pharams do
   Documentation for Pharams.
   """
 
-  alias Pharams.PharamsUtils
+  alias Pharams.Utils
 
   def pharams_schema_to_map(map) when is_map(map) do
     map
@@ -79,14 +79,14 @@ defmodule Pharams do
   end
 
   defp generate_validation({:__block__, [], block_contents}) do
-    root_field_declarations = PharamsUtils.generate_basic_field_schema_definitions(block_contents)
-    root_fields = PharamsUtils.get_all_basic_fields(block_contents)
-    root_required_fields = PharamsUtils.get_required_basic_fields(block_contents)
-    root_validations = PharamsUtils.generate_basic_field_validations(block_contents)
+    root_field_declarations = Utils.generate_basic_field_schema_definitions(block_contents)
+    root_fields = Utils.get_all_basic_fields(block_contents)
+    root_required_fields = Utils.get_required_basic_fields(block_contents)
+    root_validations = Utils.generate_basic_field_validations(block_contents)
 
-    root_group_declarations = PharamsUtils.generate_group_field_schema_definitions(block_contents)
-    root_sub_schema_casts = PharamsUtils.generate_group_field_schema_casts(block_contents)
-    group_schema_changesets = PharamsUtils.generate_group_field_schema_changesets(block_contents)
+    root_group_declarations = Utils.generate_group_field_schema_definitions(block_contents)
+    root_sub_schema_casts = Utils.generate_group_field_schema_casts(block_contents)
+    group_schema_changesets = Utils.generate_group_field_schema_changesets(block_contents)
 
     module =
       [
@@ -112,12 +112,7 @@ defmodule Pharams do
       |> List.flatten()
       |> Enum.join("\n")
 
-    module
-    |> Code.format_string!()
-    |> IO.puts()
-
-    module
-    |> Code.string_to_quoted!()
+    Code.string_to_quoted!(module)
   end
 
   defmacro pharams(controller_action, do: block) do

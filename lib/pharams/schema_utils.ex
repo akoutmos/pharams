@@ -1,5 +1,5 @@
 defmodule Pharams.SchemaUtils do
-  alias Pharams.PharamsUtils
+  alias Pharams.Utils
 
   def generate_schema_entry(
         {_, _, [sub_schema_name, :many, [do: {:__block__, [], block_contents}]]}
@@ -11,8 +11,8 @@ defmodule Pharams.SchemaUtils do
 
     [
       "embeds_many #{inspect(sub_schema_name)}, #{module_name}, primary_key: false do",
-      PharamsUtils.generate_basic_field_schema_definitions(block_contents),
-      PharamsUtils.generate_group_field_schema_definitions(block_contents),
+      Utils.generate_basic_field_schema_definitions(block_contents),
+      Utils.generate_group_field_schema_definitions(block_contents),
       "end"
     ]
     |> List.flatten()
@@ -28,8 +28,8 @@ defmodule Pharams.SchemaUtils do
 
     [
       "embeds_one #{inspect(sub_schema_name)}, #{module_name}, primary_key: false  do",
-      PharamsUtils.generate_basic_field_schema_definitions(block_contents),
-      PharamsUtils.generate_group_field_schema_definitions(block_contents),
+      Utils.generate_basic_field_schema_definitions(block_contents),
+      Utils.generate_group_field_schema_definitions(block_contents),
       "end"
     ]
     |> List.flatten()

@@ -19,6 +19,14 @@ def deps do
 end
 ```
 
+If you would like the formatter to not add parenthesis to `required` and `optional` you can add the following to you `.formatter.exs`:
+
+```
+[
+  import_deps: [:pharams]
+]
+```
+
 Documentation can be found at [https://hexdocs.pm/pharams](https://hexdocs.pm/pharams).
 
 ## Usage
@@ -70,11 +78,9 @@ pharams :index do
     subset: ["art", "music", "technology"],
     length: [max: 2]
 
-
   optional(:favorite_programming_language, :string,
     exclusion: ~w(Java Perl PHP),
     default: "Elixir"
-
 
   required :addresses, :one do
     required :billing_address, :one do
