@@ -152,3 +152,47 @@ optional(:interests, {:array, :string},
 ```
 
 Another thing to note in this example is that multiple `Ecto.Changeset.validate_*` functions can be applied to a specific field. In this example, both `validate_length` and `validate_subset` are used.
+
+One of last things to cover is that you have the ability to define whether an embedded schema is only embedded once or many times. See the following examples:
+
+```elixir
+pharams :index do
+  required :item, :one do
+    required :quantity, :integer, number: [greater_than: 0, less_than: 100]
+    required :item_id, Ecto.UUID
+  end
+end
+
+# Versus
+
+pharams :indexer do
+  required :items, :many do
+    required :quantity, :integer, number: [greater_than: 0, less_than: 100]
+    required :item_id, Ecto.UUID
+  end
+end
+```
+
+With the former, your params will look like so:
+
+```elixir
+%{
+  item: %{
+    item_id: "7c1bb0bf-8f31-4dbc-88c5-568f11ab7443",
+    quantity: 5
+  }
+}
+```
+
+While with the latter, your params will like like this:
+
+```elixir
+%{
+  items: [
+    %{
+      item_id: "7c1bb0bf-8f31-4dbc-88c5-568f11ab7443",
+      quantity: 5
+    }
+  ]
+}
+```

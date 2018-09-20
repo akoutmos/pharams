@@ -119,6 +119,10 @@ defmodule Pharams do
     Code.string_to_quoted!(module)
   end
 
+  defp generate_validation(ast) do
+    generate_validation({:__block__, [], [ast]})
+  end
+
   @doc """
   This macro provides the ability to define validation schemas for use in Phoenix controllers
 
