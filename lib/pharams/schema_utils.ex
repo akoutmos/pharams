@@ -1,4 +1,6 @@
 defmodule Pharams.SchemaUtils do
+  @moduledoc false
+
   alias Pharams.Utils
 
   def generate_schema_entry(

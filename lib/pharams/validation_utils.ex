@@ -1,4 +1,6 @@
 defmodule Pharams.ValidationUtils do
+  @moduledoc false
+
   alias Pharams.Utils
 
   def generate_group_field_schema_changeset_entries(

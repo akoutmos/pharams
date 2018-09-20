@@ -4,7 +4,7 @@
 
 **WORK IN PROGRESS**
 
-Define Phoenix parameter validations declaratively. Under the hood, the Pharams macros make use of Ecto.Schema and so errors are provided in the form of changesets. These error changesets can then be sent to any error view of your choosing (Pharams comes with a very basic error view out of the box). In addition, the usage of the Pharams macro will inject a Plug in your controller so that the `params` variable passed to your Phoenix controller has already already been validated. The `params` variable passed to your function controller is a plain map with atoms as keys.
+Define Phoenix parameter validators declaratively. Under the hood, the Pharams macros make use of Ecto.Schema and as a results, errors are provided in the form of changesets. These error changesets can then be sent to any error view of your choosing (Pharams comes with a very basic error view out of the box). In addition, the usage of the `pharams` macro will inject a Plug in your controller so that the `params` variable passed to your Phoenix controller action function has already already been validated. The `params` variable passed to your function controller is a map which mirrors your schema with atoms as keys.
 
 ## Installation
 
@@ -14,7 +14,7 @@ by adding `pharams` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:pharams, "~> 0.1.0"}
+    {:pharams, "~> 0.3.0"}
   ]
 end
 ```
@@ -37,14 +37,14 @@ To get started, add the following to your Phoenix Controller:
 use Pharams
 ```
 
-If you would like to configure the Pharams module to use an error view of your choosing you can do something like this (shown with defaults):
+If you would like to configure the Pharams module to use a different error view or status code you can do the following (shown with defaults):
 
 ```elixir
 # error_status takes an atom (see https://github.com/elixir-plug/plug/blob/master/lib/plug/conn/status.ex for full list of supported statuses)
 use Pharams, view_module: Pharams.ErrorView, view_template: "errors.json", error_status: :unprocessable_entity
 ```
 
-Next you can use the pharams macro to define the validation that should take place against incoming requests. Below is a simple example:
+Next you can use the `pharams` macro to define the validator that should be used against incoming requests. Below is a simple example:
 
 ```elixir
 pharams :index do
@@ -56,8 +56,8 @@ end
 
 def index(conn, params) do
   # You will only get into this function if the request
-  # parameters have passed the above validation. The params
-  # variable is now just a plain old map with atoms as keys.
+  # parameters have passed the above validator. The params
+  # variable is now just a map with atoms as keys.
 
   render(conn, "index.html")
 end
@@ -78,7 +78,7 @@ pharams :index do
     subset: ["art", "music", "technology"],
     length: [max: 2]
 
-  optional(:favorite_programming_language, :string,
+  optional :favorite_programming_language, :string,
     exclusion: ~w(Java Perl PHP),
     default: "Elixir"
 
@@ -109,14 +109,14 @@ end
 
 def index(conn, params) do
   # You will only get into this function if the request
-  # parameters have passed the above validation. The params
-  # variable is now just a plain old map with atoms as keys.
+  # parameters have passed the above validator. The params
+  # variable is now just a map with atoms as keys.
 
   render(conn, "index.html")
 end
 ```
 
-Let's break this one down as well to make things clear. As you can see, you can also have embedded required/optional schemas in your validation declaration (for example the `:addresses` schema contains both `:billing_address` and `:shipping_address` schemas). You can also pass in a keyword list of additional options for fields. For example the `:favorite_programming_language` field can have a default value of `Elixir`, and using the `Ecto.Changeset.validate_exclusion/4` via the `exclusion: ~w(Java Perl PHP)` keyword entry, you can validate that the string is not in the provided list. All of the `Ecto.Changeset.validate_*` functions are supported, with the caveat that you call them with out their `validate_` prefix. You can also get fairly involved with your validations using the `validate_change` Ecto.Changeset function:
+Let's break this one down as well to make things clearer. As you can see, you can also have embedded `required` and `optional` schemas in your validator declaration (for example the `:addresses` schema contains both `:billing_address` and `:shipping_address` schemas). You can also pass in a keyword list of additional options for fields. For example the `:favorite_programming_language` field can have a default value of `Elixir`, and using the `Ecto.Changeset.validate_exclusion/4` via the `exclusion: ~w(Java Perl PHP)` keyword entry, you can validate that the string is not in the provided list. All of the `Ecto.Changeset.validate_*` functions are supported, with the caveat that you call them without their `validate_` prefix. You can also get fairly involved with your validations using the `validate_change` Ecto.Changeset function:
 
 ```elixir
 pharams :index do
@@ -135,7 +135,7 @@ pharams :index do
 end
 ```
 
-When using the `Ecto.Changeset.validate_*/3` functions, all you have to provide is the last argument. The Pharams macro will populate the first two params under the hood for you. When using the `Ecto.Changeset.validate_*/4` functions, you have to pass the last two parameters as a list. See below the two different uses of `validate_subset`:
+When using the `Ecto.Changeset.validate_*/3` functions, all you have to provide is the last argument. The Pharams macro will populate the first two parameters under the hood for you. When using the `Ecto.Changeset.validate_*/4` functions, you have to pass the last two parameters as a list. See below the two different uses of `validate_subset`:
 
 ```elixir
 # Using Ecto.Changeset.validate_subset/3
@@ -150,3 +150,5 @@ optional(:interests, {:array, :string},
   length: [max: 2]
 )
 ```
+
+Another thing to note in this example is that multiple `Ecto.Changeset.validate_*` functions can be applied to a specific field. In this example, both `validate_length` and `validate_subset` are used.

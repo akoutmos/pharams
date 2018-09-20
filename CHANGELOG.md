@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2018-09-19
+
+### Added
+
+- Improved documentation
+
+## [0.2.0] - 2018-09-19
+
+### Removed
+
+- Output of generated ecto schema during compilation
+
+### Changed
+
+- Directory structure
+
 ## [0.1.0] - 2018-09-19
 
 ### Added

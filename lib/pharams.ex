@@ -1,10 +1,14 @@
 defmodule Pharams do
   @moduledoc """
-  Documentation for Pharams.
+  Functions and macros for validating requests to Phoenix
+  Controllers.
   """
 
   alias Pharams.Utils
 
+  @doc """
+  Takes a nested struct data structure and turns it into a map
+  """
   def pharams_schema_to_map(map) when is_map(map) do
     map
     |> Map.from_struct()
@@ -115,6 +119,29 @@ defmodule Pharams do
     Code.string_to_quoted!(module)
   end
 
+  @doc """
+  This macro provides the ability to define validation schemas for use in Phoenix controllers
+
+  ## Example
+  ```elixir
+  use Pharams, view_module: Pharams.ErrorView, view_template: "errors.json", error_status: :unprocessable_entity
+
+  pharams :index do
+    required :terms_conditions, :boolean
+    required :password, :string
+    required :password_confirmation, :string
+    optional :age, :integer
+  end
+
+  def index(conn, params) do
+    # You will only get into this function if the request
+    # parameters have passed the above validator. The params
+    # variable is now just a map with atoms as keys.
+
+    render(conn, "index.html")
+  end
+  ```
+  """
   defmacro pharams(controller_action, do: block) do
     camel_action =
       controller_action

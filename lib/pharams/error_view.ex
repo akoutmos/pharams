@@ -1,8 +1,9 @@
 defmodule Pharams.ErrorView do
+  @moduledoc false
+
   @doc """
   Traverses changeset errors.
   """
-
   def translate_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
       Enum.reduce(opts, msg, fn {key, value}, acc ->
