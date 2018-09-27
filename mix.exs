@@ -4,7 +4,7 @@ defmodule Pharams.MixProject do
   def project do
     [
       app: :pharams,
-      version: "0.4.0",
+      version: "0.5.0",
       elixir: "~> 1.6",
       name: "Pharams",
       source_url: "https://github.com/akoutmos/pharams",
