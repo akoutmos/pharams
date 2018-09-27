@@ -54,10 +54,13 @@ defmodule Pharams.ValidationUtils do
     )
   end
 
+  def generate_group_field_schema_changeset_entries(_, _parent), do: []
+
   def generate_group_field_schema_cast_entries(
-        {required, _line, [field, _quantity, _opts]},
+        {required, _line, [field, _quantity, opts]},
         parent
-      ) do
+      )
+      when is_list(opts) do
     required = required == :required
 
     changeset_root_name =
@@ -70,6 +73,16 @@ defmodule Pharams.ValidationUtils do
     "|> cast_embed(#{inspect(field)}, with: &#{changeset_root_name}_changeset/2, required: #{
       required
     })"
+  end
+
+  def generate_group_field_schema_cast_entries(
+        {required, _line, [field, _quantity, opts]},
+        _parent
+      )
+      when is_tuple(opts) do
+    required = required == :required
+
+    "|> cast_embed(#{inspect(field)}, required: #{required})"
   end
 
   def generate_changeset_validation_entries({_, _, [field_name, _type, opts]}) do

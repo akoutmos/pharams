@@ -11,7 +11,8 @@ defmodule Pharams do
   """
   def pharams_schema_to_map(map) when is_map(map) do
     map
-    |> Map.from_struct()
+    |> Map.delete(:__struct__)
+    |> Map.delete(:__meta__)
     |> Enum.map(fn
       {key, %{__struct__: _} = value} ->
         {key, pharams_schema_to_map(value)}

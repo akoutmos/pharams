@@ -5,8 +5,11 @@ defmodule Pharams.Utils do
 
   def split_basic_and_group_fields(ast) do
     Enum.split_with(ast, fn
-      {_req, _line, [_field, _type, opts]} ->
+      {_req, _line, [_field, _type, opts]} when is_list(opts) ->
         not Keyword.has_key?(opts, :do)
+
+      {_req, _line, [_field, _type, opts]} when is_tuple(opts) ->
+        false
 
       {_req, _line, [_field, _type]} ->
         true

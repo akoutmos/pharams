@@ -43,7 +43,7 @@ defmodule Pharams.SchemaUtils do
     )
   end
 
-  def generate_schema_entry({_, _, [field_name, type, opts]}) do
+  def generate_schema_entry({_, _, [field_name, type, opts]}) when is_list(opts) do
     default = Keyword.get(opts, :default)
 
     if default do
@@ -51,6 +51,18 @@ defmodule Pharams.SchemaUtils do
     else
       "field(#{inspect(field_name)}, #{normalize_field_type(type)})"
     end
+  end
+
+  def generate_schema_entry({_, _, [sub_schema_name, :one, opts]}) when is_tuple(opts) do
+    module_name = normalize_field_type(opts)
+
+    "embeds_one #{inspect(sub_schema_name)}, #{module_name}"
+  end
+
+  def generate_schema_entry({_, _, [sub_schema_name, :many, opts]}) when is_tuple(opts) do
+    module_name = normalize_field_type(opts)
+
+    "embeds_many #{inspect(sub_schema_name)}, #{module_name}"
   end
 
   def generate_schema_entry({_, _, [field_name, type]}) do
