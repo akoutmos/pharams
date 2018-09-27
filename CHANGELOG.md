@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2018-09-27
+
+### Added
+
+- Added ability to embed external module schemas (still need to allow using `with:` to specify non default changeset function).
+
 ## [0.4.0] - 2018-09-20
 
 ### Added
