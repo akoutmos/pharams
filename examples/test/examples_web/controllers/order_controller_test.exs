@@ -213,4 +213,105 @@ defmodule ExamplesWeb.OrderControllerTest do
       end)
     end
   end
+
+  describe "delete" do
+    test "should respond with a 200 when valid params are passed in", %{conn: conn} do
+      path = Routes.order_path(conn, :delete, "9dc4ca4e-c873-4e9f-9649-522e604e4a5e")
+      resp = delete(conn, path)
+
+      assert resp.status == 200
+      assert Jason.decode!(resp.resp_body) == %{"result" => "success"}
+    end
+
+    test "should respond with a 422 when bad parameters are passed in", %{conn: conn} do
+      param_tests = [
+        {"INVALID", %{"errors" => %{"id" => ["is invalid"]}}},
+        {123, %{"errors" => %{"id" => ["is invalid"]}}}
+      ]
+
+      Enum.each(param_tests, fn {id, expected_result} ->
+        path = Routes.order_path(conn, :delete, id)
+        resp = delete(conn, path)
+
+        assert resp.status == 422
+        assert Jason.decode!(resp.resp_body) == expected_result
+      end)
+    end
+  end
+
+  describe "show" do
+    test "should respond with a 200 when valid params are passed in", %{conn: conn} do
+      path = Routes.order_path(conn, :show, "9dc4ca4e-c873-4e9f-9649-522e604e4a5e")
+      resp = get(conn, path)
+
+      assert resp.status == 200
+      assert Jason.decode!(resp.resp_body) == %{"result" => "success"}
+    end
+
+    test "should respond with a 422 when bad parameters are passed in", %{conn: conn} do
+      param_tests = [
+        {"INVALID", %{"errors" => %{"id" => ["is invalid"]}}},
+        {123, %{"errors" => %{"id" => ["is invalid"]}}}
+      ]
+
+      Enum.each(param_tests, fn {id, expected_result} ->
+        path = Routes.order_path(conn, :show, id)
+        resp = get(conn, path)
+
+        assert resp.status == 422
+        assert Jason.decode!(resp.resp_body) == expected_result
+      end)
+    end
+  end
+
+  describe "index" do
+    test "should respond with a 200 when valid params are passed in", %{conn: conn} do
+      params = %{
+        page: %{
+          page: 2,
+          page_size: 5
+        }
+      }
+
+      path = Routes.order_path(conn, :index)
+      resp = get(conn, path, params)
+
+      assert resp.status == 200
+      assert Jason.decode!(resp.resp_body) == %{"data" => "all the things"}
+    end
+
+    test "should respond with a 422 when invalid parameters are passed in", %{conn: conn} do
+      param_tests = [
+        {%{
+           page: %{
+             page: -1,
+             page_size: 0
+           }
+         },
+         %{
+           "errors" => %{
+             "page" => %{
+               "page" => ["must be greater than 0"],
+               "page_size" => ["must be greater than 0"]
+             }
+           }
+         }},
+        {%{
+           page: %{
+             page: "INVALID",
+             page_size: "INVALID"
+           }
+         },
+         %{"errors" => %{"page" => %{"page" => ["is invalid"], "page_size" => ["is invalid"]}}}}
+      ]
+
+      Enum.each(param_tests, fn {params, expected_result} ->
+        path = Routes.order_path(conn, :index)
+        resp = get(conn, path, params)
+
+        assert resp.status == 422
+        assert Jason.decode!(resp.resp_body) == expected_result
+      end)
+    end
+  end
 end
