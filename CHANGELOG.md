@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2018-09-27
+
+### Added
+
+- Example project which is also used for integration testing
+
+### Fixed
+
+- Bug when aliases are used in macro
+
 ## [0.5.0] - 2018-09-27
 
 ### Added
