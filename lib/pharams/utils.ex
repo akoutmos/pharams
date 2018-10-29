@@ -57,16 +57,20 @@ defmodule Pharams.Utils do
     end)
   end
 
-  def generate_basic_field_schema_definitions(ast) do
+  def generate_basic_field_schema_definitions(ast, caller) do
     ast
     |> get_basic_field_asts()
-    |> Enum.map(&SchemaUtils.generate_schema_entry/1)
+    |> Enum.map(fn field ->
+      SchemaUtils.generate_schema_entry(field, caller)
+    end)
   end
 
-  def generate_group_field_schema_definitions(ast) do
+  def generate_group_field_schema_definitions(ast, caller) do
     ast
     |> get_group_field_asts()
-    |> Enum.map(&SchemaUtils.generate_schema_entry/1)
+    |> Enum.map(fn field ->
+      SchemaUtils.generate_schema_entry(field, caller)
+    end)
   end
 
   def generate_group_field_schema_casts(ast, parent \\ nil) do

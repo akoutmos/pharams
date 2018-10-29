@@ -71,7 +71,7 @@ In the following example, we will create a validator with a bit more functionali
 pharams :index do
   required :terms_conditions, :boolean, acceptance: []
   required :password, :string, confirmation: [], length: [min: 8, max: 16]
-  required :password_confirmation, :string, []
+  required :password_confirmation, :string
   required :age, :integer, number: [greater_than: 16, less_than: 110]
 
   optional :interests, {:array, :string},

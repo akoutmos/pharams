@@ -70,26 +70,31 @@ defmodule Pharams do
         else
           controller_module = unquote(controller_module)
 
-          view_module = controller_module.pharams_error_view_module
-          view_template = controller_module.pharams_error_view_template
-          error_status = controller_module.pharams_error_status
+          view_module = controller_module.pharams_error_view_module()
+          view_template = controller_module.pharams_error_view_template()
+          error_status = controller_module.pharams_error_status()
 
           conn
           |> put_status(error_status)
-          |> render(view_module, view_template, changeset)
+          |> put_view(view_module)
+          |> render(view_template, changeset)
           |> halt()
         end
       end
     end
   end
 
-  defp generate_validation({:__block__, [], block_contents}) do
-    root_field_declarations = Utils.generate_basic_field_schema_definitions(block_contents)
+  defp generate_validation({:__block__, [], block_contents}, caller) do
+    root_field_declarations =
+      Utils.generate_basic_field_schema_definitions(block_contents, caller)
+
     root_fields = Utils.get_all_basic_fields(block_contents)
     root_required_fields = Utils.get_required_basic_fields(block_contents)
     root_validations = Utils.generate_basic_field_validations(block_contents)
 
-    root_group_declarations = Utils.generate_group_field_schema_definitions(block_contents)
+    root_group_declarations =
+      Utils.generate_group_field_schema_definitions(block_contents, caller)
+
     root_sub_schema_casts = Utils.generate_group_field_schema_casts(block_contents)
     group_schema_changesets = Utils.generate_group_field_schema_changesets(block_contents)
 
@@ -120,8 +125,8 @@ defmodule Pharams do
     Code.string_to_quoted!(module)
   end
 
-  defp generate_validation(ast) do
-    generate_validation({:__block__, [], [ast]})
+  defp generate_validation(ast, caller) do
+    generate_validation({:__block__, [], [ast]}, caller)
   end
 
   @doc """
@@ -157,7 +162,7 @@ defmodule Pharams do
 
     # Create validation module
     validation_module_name = Module.concat([calling_module, PharamsValidator, camel_action])
-    validation_module_ast = generate_validation(block)
+    validation_module_ast = generate_validation(block, __CALLER__)
     Module.create(validation_module_name, validation_module_ast, Macro.Env.location(__ENV__))
 
     # Create plug module
