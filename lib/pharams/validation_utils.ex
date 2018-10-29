@@ -201,11 +201,15 @@ defmodule Pharams.ValidationUtils do
   end
 
   defp generate_validate_length(field_name, opts) do
-    "|> validate_length(#{inspect(field_name)}, #{inspect(opts)})"
+    opts = Macro.to_string(opts)
+
+    "|> validate_length(#{inspect(field_name)}, #{opts})"
   end
 
   defp generate_validate_number(field_name, opts) do
-    "|> validate_number(#{inspect(field_name)}, #{inspect(opts)})"
+    opts = Macro.to_string(opts)
+
+    "|> validate_number(#{inspect(field_name)}, #{opts})"
   end
 
   defp generate_validate_subset(field_name, data, opts) when is_tuple(data) do
