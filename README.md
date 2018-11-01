@@ -41,7 +41,7 @@ If you would like to configure the Pharams module to use a different error view 
 
 ```elixir
 # error_status takes an atom (see https://github.com/elixir-plug/plug/blob/master/lib/plug/conn/status.ex for full list of supported statuses)
-use Pharams, view_module: Pharams.ErrorView, view_template: "errors.json", error_status: :unprocessable_entity
+use Pharams, view_module: Pharams.ErrorView, view_template: "errors.json", error_status: :unprocessable_entity, key_type: :atom
 ```
 
 Next you can use the `pharams` macro to define the validator that should be used against incoming requests. Below is a simple example:

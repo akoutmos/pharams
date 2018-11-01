@@ -73,7 +73,7 @@ defmodule Pharams.Utils do
     end)
   end
 
-  def generate_group_field_schema_casts(ast, parent \\ nil) do
+  def generate_group_field_schema_casts(ast, parent) do
     ast
     |> get_group_field_asts()
     |> Enum.map(fn entry ->
@@ -81,18 +81,18 @@ defmodule Pharams.Utils do
     end)
   end
 
-  def generate_group_field_schema_changesets(ast, parent \\ nil) do
+  def generate_group_field_schema_changesets(ast, parent, caller) do
     ast
     |> get_group_field_asts()
     |> Enum.map(fn entry ->
-      ValidationUtils.generate_group_field_schema_changeset_entries(entry, parent)
+      ValidationUtils.generate_group_field_schema_changeset_entries(entry, parent, caller)
     end)
   end
 
-  def generate_basic_field_validations(ast) do
+  def generate_basic_field_validations(ast, caller) do
     ast
     |> get_basic_field_asts()
-    |> Enum.map(&ValidationUtils.generate_changeset_validation_entries/1)
+    |> Enum.map(&ValidationUtils.generate_changeset_validation_entries(&1, caller))
     |> List.flatten()
     |> Enum.reject(fn entry -> entry == nil end)
   end

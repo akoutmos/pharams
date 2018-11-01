@@ -1,6 +1,6 @@
 defmodule ExamplesWeb.OrderController do
   use ExamplesWeb, :controller
-  use Pharams
+  use Pharams, key_type: :string
 
   alias ExamplesWeb.AddressValidator
   alias Ecto.UUID

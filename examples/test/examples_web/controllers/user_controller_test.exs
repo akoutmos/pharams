@@ -11,6 +11,8 @@ defmodule ExamplesWeb.UserControllerTest do
         terms_conditions: true,
         interests: ["technology", "art"],
         favorite_programming_language: "Javascript",
+        foo: "bar",
+        bar: "foo",
         addresses: %{
           billing_address: %{
             street_line_1: "99 Place Ave",
@@ -40,26 +42,31 @@ defmodule ExamplesWeb.UserControllerTest do
       assert Jason.decode!(resp.resp_body) == %{}
     end
 
-    test "should respond with a 422 when no parameters are passed in", %{conn: conn} do
+    test "should respond with a 400 when no parameters are passed in", %{conn: conn} do
       params = %{}
       path = Routes.user_path(conn, :create)
       resp = post(conn, path, params)
 
-      assert resp.status == 422
+      assert resp.status == 400
 
       assert Jason.decode!(resp.resp_body) == %{
                "errors" => %{
                  "addresses" => ["can't be blank"],
                  "age" => ["can't be blank"],
                  "password" => ["can't be blank"],
-                 "password_confirmation" => ["can't be blank"],
-                 "terms_conditions" => ["must be accepted", "can't be blank"],
-                 "type" => ["can't be blank"]
+                 "password_confirmation" => ["Incorrect password confirmation", "can't be blank"],
+                 "terms_conditions" => [
+                   "Accept the terms or conditions...or else",
+                   "can't be blank"
+                 ],
+                 "type" => ["can't be blank"],
+                 "foo" => ["can't be blank"],
+                 "bar" => ["can't be blank"]
                }
              }
     end
 
-    test "should respond with a 422 when invalid addresses are passed in", %{conn: conn} do
+    test "should respond with a 400 when invalid addresses are passed in", %{conn: conn} do
       base_params = %{
         age: 25,
         type: "super_admin",
@@ -68,6 +75,8 @@ defmodule ExamplesWeb.UserControllerTest do
         terms_conditions: true,
         interests: ["technology", "art"],
         favorite_programming_language: "Javascript",
+        foo: "bar",
+        bar: "foo",
         addresses: %{
           billing_address: %{
             street_line_1: "99 Place Ave",
@@ -119,12 +128,12 @@ defmodule ExamplesWeb.UserControllerTest do
         path = Routes.user_path(conn, :create)
         resp = post(conn, path, params)
 
-        assert resp.status == 422
+        assert resp.status == 400
         assert Jason.decode!(resp.resp_body) == expected_result
       end)
     end
 
-    test "should respond with a 422 when invalid fields are passed in", %{
+    test "should respond with a 400 when invalid fields are passed in", %{
       conn: conn
     } do
       base_params = %{
@@ -135,6 +144,8 @@ defmodule ExamplesWeb.UserControllerTest do
         terms_conditions: true,
         interests: ["technology", "art"],
         favorite_programming_language: "Javascript",
+        foo: "bar",
+        bar: "foo",
         addresses: %{
           billing_address: %{
             street_line_1: "99 Place Ave",
@@ -167,16 +178,18 @@ defmodule ExamplesWeb.UserControllerTest do
         {%{base_params | interests: ["something", "nothing"]},
          %{"errors" => %{"interests" => ["has an invalid entry"]}}},
         {%{base_params | password_confirmation: "asdf"},
-         %{"errors" => %{"password_confirmation" => ["does not match confirmation"]}}},
+         %{"errors" => %{"password_confirmation" => ["Incorrect password confirmation"]}}},
         {%{base_params | terms_conditions: false},
-         %{"errors" => %{"terms_conditions" => ["must be accepted"]}}}
+         %{"errors" => %{"terms_conditions" => ["Accept the terms or conditions...or else"]}}},
+        {%{base_params | foo: "foo"}, %{"errors" => %{"foo" => ["cannot be foo"]}}},
+        {%{base_params | bar: "bar"}, %{"errors" => %{"bar" => ["cannot be bar"]}}}
       ]
 
       Enum.each(params, fn {params, expected_result} ->
         path = Routes.user_path(conn, :create)
         resp = post(conn, path, params)
 
-        assert resp.status == 422
+        assert resp.status == 400
         assert Jason.decode!(resp.resp_body) == expected_result
       end)
     end

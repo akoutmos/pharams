@@ -34,27 +34,27 @@ defmodule ExamplesWeb.OrderControllerTest do
       assert resp.status == 200
 
       assert resp.params == %{
-               shipping_method: "1_day_air",
-               items: [
-                 %{quantity: 7, item_id: "e1ff4243-90e9-47ed-9c63-d4d45dd14f9b"},
-                 %{quantity: 3, item_id: "77cce0f1-fd48-4dba-9701-e6b06b1865b9"},
-                 %{quantity: 5, item_id: "9dc4ca4e-c873-4e9f-9649-522e604e4a5e"}
+               "shipping_method" => "1_day_air",
+               "items" => [
+                 %{"quantity" => 7, "item_id" => "e1ff4243-90e9-47ed-9c63-d4d45dd14f9b"},
+                 %{"quantity" => 3, "item_id" => "77cce0f1-fd48-4dba-9701-e6b06b1865b9"},
+                 %{"quantity" => 5, "item_id" => "9dc4ca4e-c873-4e9f-9649-522e604e4a5e"}
                ],
-               price: 145.99,
-               addresses: %{
-                 billing_address: %{
-                   street_line_1: "99 Place Ave",
-                   street_line_2: "Unit 2",
-                   city: "Somewhere",
-                   state: "TX",
-                   zip_code: "12345"
+               "price" => 145.99,
+               "addresses" => %{
+                 "billing_address" => %{
+                   "street_line_1" => "99 Place Ave",
+                   "street_line_2" => "Unit 2",
+                   "city" => "Somewhere",
+                   "state" => "TX",
+                   "zip_code" => "12345"
                  },
-                 shipping_address: %{
-                   street_line_1: "99 Place Ave",
-                   street_line_2: nil,
-                   city: "Somwhere",
-                   state: "TX",
-                   zip_code: "12345"
+                 "shipping_address" => %{
+                   "street_line_1" => "99 Place Ave",
+                   "street_line_2" => nil,
+                   "city" => "Somwhere",
+                   "state" => "TX",
+                   "zip_code" => "12345"
                  }
                }
              }

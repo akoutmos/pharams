@@ -1,6 +1,8 @@
 defmodule ExamplesWeb.UserController do
   use ExamplesWeb, :controller
-  use Pharams
+  use Pharams, error_status: 400
+
+  alias ExamplesWeb.{RegexValidator, Functions}
 
   def index(conn, _params) do
     conn
@@ -9,10 +11,25 @@ defmodule ExamplesWeb.UserController do
   end
 
   pharams :create do
-    required(:terms_conditions, :boolean, acceptance: [])
-    required(:password, :string, confirmation: [], length: [min: 8, max: 16])
+    required(:terms_conditions, :boolean,
+      acceptance: [message: ExamplesWeb.Messages.terms_conditions_acceptance()]
+    )
+
+    required(:password, :string,
+      confirmation: [required: true, message: ExamplesWeb.Messages.pass_confirmation()],
+      length: [min: 8, max: 16]
+    )
+
+    required(:foo, :string,
+      change: fn :foo, foo -> if foo == "foo", do: [foo: "cannot be foo"], else: [] end
+    )
+
+    required(:bar, :string, change: [:metadata, &Functions.bar_validator/2])
+
     required(:password_confirmation, :string)
     required(:age, :integer, number: [greater_than: 16, less_than: 110])
+    optional(:phone_number, :string, format: RegexValidator.phone_number())
+    optional(:zip_code, :string, format: RegexValidator.zip_code())
 
     optional(:interests, {:array, :string},
       subset: ["art", "music", "technology"],
