@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.6.0] - 2018-09-27
+## [0.7.0] - 2018-11-01
+
+### Added
+
+- The ability to chose your key type of the params map
+
+### Fixed
+
+- Alias issue inside of validation functions
+
+## [0.6.0] - 2018-10-29
 
 ### Added
 
