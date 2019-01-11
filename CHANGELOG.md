@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2019-1-10
+
+### Fixed
+
+- Fixed issue when default value is set to false
+
 ## [0.7.0] - 2018-11-01
 
 ### Added

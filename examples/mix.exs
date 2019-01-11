@@ -39,7 +39,8 @@ defmodule Examples.MixProject do
       {:phoenix_pubsub, "~> 1.1"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
-      {:cowboy, "~> 1.1.2"}
+      {:cowboy, "~> 1.1.2"},
+      {:plug_cowboy, "~> 1.0.0"}
     ]
   end
 end

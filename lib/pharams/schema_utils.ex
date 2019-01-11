@@ -49,7 +49,7 @@ defmodule Pharams.SchemaUtils do
   def generate_schema_entry({_, _, [field_name, type, opts]}, caller) when is_list(opts) do
     default = Keyword.get(opts, :default)
 
-    if default do
+    if default != nil do
       "field(#{inspect(field_name)}, #{normalize_field_type(type, caller)}, default: #{
         inspect(default)
       })"

@@ -45,6 +45,7 @@ defmodule ExamplesWeb.UserController do
 
     required :addresses, :one do
       required :billing_address, :one do
+        optional(:default, :boolean, default: false)
         required(:street_line_1, :string)
         optional(:street_line_2, :string)
         required(:zip_code, :string, format: ~r/\d{5}/)

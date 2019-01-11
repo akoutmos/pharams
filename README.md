@@ -165,7 +165,7 @@ end
 
 # Versus
 
-pharams :indexer do
+pharams :index do
   required :items, :many do
     required :quantity, :integer, number: [greater_than: 0, less_than: 100]
     required :item_id, Ecto.UUID
