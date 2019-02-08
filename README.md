@@ -14,7 +14,7 @@ by adding `pharams` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:pharams, "~> 0.7.0"}
+    {:pharams, "~> 0.9.0"}
   ]
 end
 ```
