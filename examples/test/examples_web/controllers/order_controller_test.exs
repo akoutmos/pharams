@@ -197,10 +197,8 @@ defmodule ExamplesWeb.OrderControllerTest do
       }
 
       param_tests = [
-        {%{base_params | price: "-124.99"},
-         %{"errors" => %{"price" => ["must be greater than or equal to 0"]}}},
-        {%{base_params | price: -124.99},
-         %{"errors" => %{"price" => ["must be greater than or equal to 0"]}}},
+        {%{base_params | price: "-124.99"}, %{"errors" => %{"price" => ["must be greater than or equal to 0"]}}},
+        {%{base_params | price: -124.99}, %{"errors" => %{"price" => ["must be greater than or equal to 0"]}}},
         {%{base_params | price: "asdf"}, %{"errors" => %{"price" => ["is invalid"]}}}
       ]
 
@@ -301,8 +299,7 @@ defmodule ExamplesWeb.OrderControllerTest do
              page: "INVALID",
              page_size: "INVALID"
            }
-         },
-         %{"errors" => %{"page" => %{"page" => ["is invalid"], "page_size" => ["is invalid"]}}}}
+         }, %{"errors" => %{"page" => %{"page" => ["is invalid"], "page_size" => ["is invalid"]}}}}
       ]
 
       Enum.each(param_tests, fn {params, expected_result} ->
@@ -312,6 +309,16 @@ defmodule ExamplesWeb.OrderControllerTest do
         assert resp.status == 422
         assert Jason.decode!(resp.resp_body) == expected_result
       end)
+    end
+  end
+
+  describe "update" do
+    test "should return the params without the nil fields", %{conn: conn} do
+      path = Routes.order_path(conn, :update, 5)
+      resp = patch(conn, path, %{})
+
+      assert resp.status == 200
+      assert Jason.decode!(resp.resp_body) == %{"result" => %{"cancel_order" => false, "id" => 5}}
     end
   end
 end

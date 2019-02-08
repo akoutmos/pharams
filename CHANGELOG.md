@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2019-2-08
+
+### Added
+
+- Added ability to prune empty fields
+- Added ability to override global controller config at the endpoint level
+
 ## [0.9.0] - 2019-2-07
 
 ### Fixed

@@ -31,7 +31,7 @@ defmodule ExamplesWeb.OrderController do
     |> json(%{data: "all the things"})
   end
 
-  pharams :create do
+  pharams :create, prune_nil_fields: true do
     required :items, :many do
       required(:quantity, :integer, number: [greater_than: 0, less_than: 100])
       required(:item_id, UUID)
@@ -70,5 +70,18 @@ defmodule ExamplesWeb.OrderController do
     conn
     |> put_status(200)
     |> json(%{result: "success"})
+  end
+
+  pharams :update, drop_nil_fields: true do
+    required(:id, :integer)
+    optional(:quantity, :integer)
+    optional(:delivery_date, :string)
+    optional(:cancel_order, :boolean, default: false)
+  end
+
+  def update(conn, params) do
+    conn
+    |> put_status(200)
+    |> json(%{result: params})
   end
 end

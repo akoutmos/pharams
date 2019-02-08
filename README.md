@@ -14,7 +14,7 @@ by adding `pharams` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:pharams, "~> 0.9.0"}
+    {:pharams, "~> 0.10.0"}
   ]
 end
 ```
@@ -41,7 +41,7 @@ If you would like to configure the Pharams module to use a different error view 
 
 ```elixir
 # error_status takes an atom (see https://github.com/elixir-plug/plug/blob/master/lib/plug/conn/status.ex for full list of supported statuses)
-use Pharams, view_module: Pharams.ErrorView, view_template: "errors.json", error_status: :unprocessable_entity, key_type: :atom
+use Pharams, view_module: Pharams.ErrorView, view_template: "errors.json", error_status: :unprocessable_entity, key_type: :atom, drop_nil_fields: false
 ```
 
 Next you can use the `pharams` macro to define the validator that should be used against incoming requests. Below is a simple example:
@@ -196,3 +196,16 @@ While with the latter, your params will like like this:
   ]
 }
 ```
+
+If you would like to drop nil or empty fields from your params (empty fields meaning `nil, %{}, "", and []`) then you can either set the option on the individual route like so:
+
+```
+pharams :update, drop_nil_fields: true do
+  required(:id, :integer)
+  optional(:quantity, :integer)
+  optional(:delivery_date, :string)
+  optional(:cancel_order, :boolean, default: false)
+end
+```
+
+Or add the same `drop_nil_fields: true` option when you use the Pharams module up at the top of your controller. This would in turn apply that configuration to all pharams calls. As a note, setting it at the individual endpoint level overrides controller wide configuration.
