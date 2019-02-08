@@ -78,5 +78,14 @@ defmodule Pharams.SchemaUtils do
     Macro.expand(alias_field, caller)
   end
 
-  defp normalize_field_type(type, _caller), do: "#{inspect(type)}"
+  defp normalize_field_type(
+         {type, {:__aliases__, _line_info, _module_type} = alias_field},
+         caller
+       ) do
+    Macro.to_string({type, Macro.expand(alias_field, caller)})
+  end
+
+  defp normalize_field_type(type, _caller) do
+    "#{inspect(type)}"
+  end
 end

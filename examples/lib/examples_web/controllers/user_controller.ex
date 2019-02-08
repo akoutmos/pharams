@@ -3,6 +3,7 @@ defmodule ExamplesWeb.UserController do
   use Pharams, error_status: 400
 
   alias ExamplesWeb.{RegexValidator, Functions}
+  alias ExamplesWeb.SportsType, as: Sports
 
   def index(conn, _params) do
     conn
@@ -30,6 +31,8 @@ defmodule ExamplesWeb.UserController do
     required(:age, :integer, number: [greater_than: 16, less_than: 110])
     optional(:phone_number, :string, format: RegexValidator.phone_number())
     optional(:zip_code, :string, format: RegexValidator.zip_code())
+    optional(:hobbies, {:array, Sports})
+    optional(:hobbies_2, {:array, ExamplesWeb.SportsType})
 
     optional(:interests, {:array, :string},
       subset: ["art", "music", "technology"],

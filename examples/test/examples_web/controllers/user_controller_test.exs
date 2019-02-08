@@ -13,6 +13,7 @@ defmodule ExamplesWeb.UserControllerTest do
         favorite_programming_language: "Javascript",
         foo: "bar",
         bar: "foo",
+        hobbies: ["soccer"],
         addresses: %{
           billing_address: %{
             street_line_1: "99 Place Ave",
@@ -146,6 +147,8 @@ defmodule ExamplesWeb.UserControllerTest do
         favorite_programming_language: "Javascript",
         foo: "bar",
         bar: "foo",
+        hobbies: ["soccer"],
+        hobbies_2: ["soccer"],
         addresses: %{
           billing_address: %{
             street_line_1: "99 Place Ave",
@@ -181,6 +184,8 @@ defmodule ExamplesWeb.UserControllerTest do
          %{"errors" => %{"password_confirmation" => ["Incorrect password confirmation"]}}},
         {%{base_params | terms_conditions: false},
          %{"errors" => %{"terms_conditions" => ["Accept the terms or conditions...or else"]}}},
+        {%{base_params | hobbies: ["sleep"]}, %{"errors" => %{"hobbies" => ["is invalid"]}}},
+        {%{base_params | hobbies_2: ["sleep"]}, %{"errors" => %{"hobbies_2" => ["is invalid"]}}},
         {%{base_params | foo: "foo"}, %{"errors" => %{"foo" => ["cannot be foo"]}}},
         {%{base_params | bar: "bar"}, %{"errors" => %{"bar" => ["cannot be bar"]}}}
       ]
