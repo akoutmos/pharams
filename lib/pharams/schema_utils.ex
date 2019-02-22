@@ -31,7 +31,7 @@ defmodule Pharams.SchemaUtils do
       |> Macro.camelize()
 
     [
-      "embeds_one #{inspect(sub_schema_name)}, #{module_name}, primary_key: false  do",
+      "embeds_one #{inspect(sub_schema_name)}, #{module_name}, primary_key: false do",
       Utils.generate_basic_field_schema_definitions(block_contents, caller),
       Utils.generate_group_field_schema_definitions(block_contents, caller),
       "end"
@@ -50,9 +50,7 @@ defmodule Pharams.SchemaUtils do
     default = Keyword.get(opts, :default)
 
     if default != nil do
-      "field(#{inspect(field_name)}, #{normalize_field_type(type, caller)}, default: #{
-        inspect(default)
-      })"
+      "field(#{inspect(field_name)}, #{normalize_field_type(type, caller)}, default: #{inspect(default)})"
     else
       "field(#{inspect(field_name)}, #{normalize_field_type(type, caller)})"
     end

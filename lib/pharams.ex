@@ -120,6 +120,8 @@ defmodule Pharams do
 
   defp generate_plug(validation_module, controller_module) do
     quote do
+      @moduledoc false
+
       use Phoenix.Controller
 
       import Plug.Conn
@@ -187,6 +189,8 @@ defmodule Pharams do
 
     module =
       [
+        "@moduledoc false",
+        "",
         "use Ecto.Schema",
         "import Ecto.Changeset",
         "",
