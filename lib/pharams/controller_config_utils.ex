@@ -1,92 +1,7 @@
-defmodule Pharams.ValidationUtils do
+defmodule Pharams.ControllerConfigUtils do
   @moduledoc false
 
   alias Pharams.Utils
-
-  @doc """
-  Creates the validation module
-  """
-  def create_validation_module(controller_action, macro_block, env, caller) do
-    validation_module_name = generate_validation_module_name(controller_action, caller)
-    validation_module_ast = generate_validation_module(macro_block, caller)
-
-    Module.create(validation_module_name, validation_module_ast, Macro.Env.location(env))
-  end
-
-  @doc """
-  Generates the module name for the given validation module
-  """
-  def generate_validation_module_name(controller_action, caller) do
-    camel_action =
-      controller_action
-      |> Atom.to_string()
-      |> Macro.camelize()
-
-    Module.concat([caller.module, PharamsValidator, camel_action])
-  end
-
-  @doc """
-  Generates the validation module
-  """
-  def generate_validation_module({:__block__, [], block_contents}, caller) do
-    root_field_declarations = Utils.generate_basic_field_schema_definitions(block_contents, caller)
-    root_fields = Utils.get_all_basic_fields(block_contents)
-    root_required_fields = Utils.get_required_basic_fields(block_contents)
-    root_validations = Utils.generate_basic_field_validations(block_contents, caller)
-    root_group_declarations = Utils.generate_group_field_schema_definitions(block_contents, caller)
-    root_sub_schema_casts = Utils.generate_group_field_schema_casts(block_contents, nil)
-    group_schema_changesets = Utils.generate_group_field_schema_changesets(block_contents, nil, caller)
-
-    module =
-      [
-        "@moduledoc false",
-        "",
-        "use Ecto.Schema",
-        "import Ecto.Changeset",
-        "",
-        "@primary_key false",
-        "embedded_schema do",
-        root_field_declarations,
-        root_group_declarations,
-        "end",
-        "",
-        "def changeset(schema, params) do",
-        "schema",
-        "|> cast(params, #{inspect(root_fields)})",
-        "|> validate_required(#{inspect(root_required_fields)})",
-        root_validations,
-        root_sub_schema_casts,
-        "end",
-        "",
-        group_schema_changesets
-      ]
-      |> List.flatten()
-
-    formatted_module =
-      module
-      |> Enum.join("\n")
-      |> Code.format_string!()
-
-    module =
-      (module ++
-         [
-           "",
-           "def dump do",
-           "\"\"\"",
-           "#{formatted_module}",
-           "\"\"\"",
-           "end"
-         ])
-      |> Enum.join("\n")
-
-    Code.string_to_quoted!(module)
-  end
-
-  def generate_validation_module(block, caller) do
-    generate_validation_module({:__block__, [], [block]}, caller)
-  end
-
-  # vvv Below need to find a new home vvv
 
   def generate_group_field_schema_changeset_entries(
         {_, _, [sub_schema_name, _count, [do: {:__block__, [], block_contents}]]},
@@ -229,7 +144,6 @@ defmodule Pharams.ValidationUtils do
 
         # Unsupported validation method
         # FIXME: Raise an error as this is an unsupported validation method
-        # and ignore :default
         _ ->
           nil
       end

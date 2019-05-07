@@ -51,6 +51,7 @@ defmodule ExamplesWeb.UserControllerTest do
       assert resp.status == 400
 
       assert Jason.decode!(resp.resp_body) == %{
+               "description" => "Invalid body parameter(s)",
                "errors" => %{
                  "addresses" => ["can't be blank"],
                  "age" => ["can't be blank"],
@@ -103,6 +104,7 @@ defmodule ExamplesWeb.UserControllerTest do
       params = [
         {put_in(base_params, [:addresses, :billing_address, :coordinates, :lat], -1000),
          %{
+           "description" => "Invalid body parameter(s)",
            "errors" => %{
              "addresses" => %{
                "billing_address" => %{
@@ -113,12 +115,14 @@ defmodule ExamplesWeb.UserControllerTest do
          }},
         {put_in(base_params, [:addresses, :billing_address, :zip_code], "INVALID"),
          %{
+           "description" => "Invalid body parameter(s)",
            "errors" => %{
              "addresses" => %{"billing_address" => %{"zip_code" => ["has invalid format"]}}
            }
          }},
         {put_in(base_params, [:addresses, :billing_address, :coordinates], nil),
          %{
+           "description" => "Invalid body parameter(s)",
            "errors" => %{
              "addresses" => %{"billing_address" => %{"coordinates" => ["can't be blank"]}}
            }
@@ -173,21 +177,55 @@ defmodule ExamplesWeb.UserControllerTest do
 
       params = [
         {%{base_params | favorite_programming_language: "Java"},
-         %{"errors" => %{"favorite_programming_language" => ["is reserved"]}}},
+         %{
+           "description" => "Invalid body parameter(s)",
+           "errors" => %{"favorite_programming_language" => ["is reserved"]}
+         }},
         {%{base_params | favorite_programming_language: ["Java", "PHP"]},
-         %{"errors" => %{"favorite_programming_language" => ["is invalid"]}}},
+         %{
+           "description" => "Invalid body parameter(s)",
+           "errors" => %{"favorite_programming_language" => ["is invalid"]}
+         }},
         {%{base_params | interests: ["art", "music", "technology"]},
-         %{"errors" => %{"interests" => ["should have at most 2 item(s)"]}}},
+         %{
+           "description" => "Invalid body parameter(s)",
+           "errors" => %{"interests" => ["should have at most 2 item(s)"]}
+         }},
         {%{base_params | interests: ["something", "nothing"]},
-         %{"errors" => %{"interests" => ["has an invalid entry"]}}},
+         %{
+           "description" => "Invalid body parameter(s)",
+           "errors" => %{"interests" => ["has an invalid entry"]}
+         }},
         {%{base_params | password_confirmation: "asdf"},
-         %{"errors" => %{"password_confirmation" => ["Incorrect password confirmation"]}}},
+         %{
+           "description" => "Invalid body parameter(s)",
+           "errors" => %{"password_confirmation" => ["Incorrect password confirmation"]}
+         }},
         {%{base_params | terms_conditions: false},
-         %{"errors" => %{"terms_conditions" => ["Accept the terms or conditions...or else"]}}},
-        {%{base_params | hobbies: ["sleep"]}, %{"errors" => %{"hobbies" => ["is invalid"]}}},
-        {%{base_params | hobbies_2: ["sleep"]}, %{"errors" => %{"hobbies_2" => ["is invalid"]}}},
-        {%{base_params | foo: "foo"}, %{"errors" => %{"foo" => ["cannot be foo"]}}},
-        {%{base_params | bar: "bar"}, %{"errors" => %{"bar" => ["cannot be bar"]}}}
+         %{
+           "description" => "Invalid body parameter(s)",
+           "errors" => %{"terms_conditions" => ["Accept the terms or conditions...or else"]}
+         }},
+        {%{base_params | hobbies: ["sleep"]},
+         %{
+           "description" => "Invalid body parameter(s)",
+           "errors" => %{"hobbies" => ["is invalid"]}
+         }},
+        {%{base_params | hobbies_2: ["sleep"]},
+         %{
+           "description" => "Invalid body parameter(s)",
+           "errors" => %{"hobbies_2" => ["is invalid"]}
+         }},
+        {%{base_params | foo: "foo"},
+         %{
+           "description" => "Invalid body parameter(s)",
+           "errors" => %{"foo" => ["cannot be foo"]}
+         }},
+        {%{base_params | bar: "bar"},
+         %{
+           "description" => "Invalid body parameter(s)",
+           "errors" => %{"bar" => ["cannot be bar"]}
+         }}
       ]
 
       Enum.each(params, fn {params, expected_result} ->

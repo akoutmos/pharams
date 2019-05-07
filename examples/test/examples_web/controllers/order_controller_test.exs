@@ -68,6 +68,7 @@ defmodule ExamplesWeb.OrderControllerTest do
       assert resp.status == 422
 
       assert Jason.decode!(resp.resp_body) == %{
+               "description" => "Invalid body parameter(s)",
                "errors" => %{
                  "addresses" => ["can't be blank"],
                  "items" => ["can't be blank"],
@@ -108,6 +109,7 @@ defmodule ExamplesWeb.OrderControllerTest do
       assert resp.status == 422
 
       assert Jason.decode!(resp.resp_body) == %{
+               "description" => "Invalid body parameter(s)",
                "errors" => %{
                  "addresses" => %{
                    "billing_address" => %{
@@ -160,6 +162,7 @@ defmodule ExamplesWeb.OrderControllerTest do
       assert resp.status == 422
 
       assert Jason.decode!(resp.resp_body) == %{
+               "description" => "Invalid body parameter(s)",
                "errors" => %{
                  "items" => [
                    %{"item_id" => ["is invalid"], "quantity" => ["must be greater than 0"]},
@@ -197,9 +200,18 @@ defmodule ExamplesWeb.OrderControllerTest do
       }
 
       param_tests = [
-        {%{base_params | price: "-124.99"}, %{"errors" => %{"price" => ["must be greater than or equal to 0"]}}},
-        {%{base_params | price: -124.99}, %{"errors" => %{"price" => ["must be greater than or equal to 0"]}}},
-        {%{base_params | price: "asdf"}, %{"errors" => %{"price" => ["is invalid"]}}}
+        {%{base_params | price: "-124.99"},
+         %{
+           "description" => "Invalid body parameter(s)",
+           "errors" => %{"price" => ["must be greater than or equal to 0"]}
+         }},
+        {%{base_params | price: -124.99},
+         %{
+           "description" => "Invalid body parameter(s)",
+           "errors" => %{"price" => ["must be greater than or equal to 0"]}
+         }},
+        {%{base_params | price: "asdf"},
+         %{"description" => "Invalid body parameter(s)", "errors" => %{"price" => ["is invalid"]}}}
       ]
 
       Enum.each(param_tests, fn {params, expected_result} ->
@@ -223,8 +235,10 @@ defmodule ExamplesWeb.OrderControllerTest do
 
     test "should respond with a 422 when bad parameters are passed in", %{conn: conn} do
       param_tests = [
-        {"INVALID", %{"errors" => %{"id" => ["is invalid"]}}},
-        {123, %{"errors" => %{"id" => ["is invalid"]}}}
+        {"INVALID",
+         %{"description" => "Invalid body parameter(s)", "errors" => %{"id" => ["is invalid"]}}},
+        {123,
+         %{"description" => "Invalid body parameter(s)", "errors" => %{"id" => ["is invalid"]}}}
       ]
 
       Enum.each(param_tests, fn {id, expected_result} ->
@@ -248,8 +262,10 @@ defmodule ExamplesWeb.OrderControllerTest do
 
     test "should respond with a 422 when bad parameters are passed in", %{conn: conn} do
       param_tests = [
-        {"INVALID", %{"errors" => %{"id" => ["is invalid"]}}},
-        {123, %{"errors" => %{"id" => ["is invalid"]}}}
+        {"INVALID",
+         %{"description" => "Invalid body parameter(s)", "errors" => %{"id" => ["is invalid"]}}},
+        {123,
+         %{"description" => "Invalid body parameter(s)", "errors" => %{"id" => ["is invalid"]}}}
       ]
 
       Enum.each(param_tests, fn {id, expected_result} ->
@@ -287,6 +303,7 @@ defmodule ExamplesWeb.OrderControllerTest do
            }
          },
          %{
+           "description" => "Invalid body parameter(s)",
            "errors" => %{
              "page" => %{
                "page" => ["must be greater than 0"],
@@ -299,7 +316,11 @@ defmodule ExamplesWeb.OrderControllerTest do
              page: "INVALID",
              page_size: "INVALID"
            }
-         }, %{"errors" => %{"page" => %{"page" => ["is invalid"], "page_size" => ["is invalid"]}}}}
+         },
+         %{
+           "description" => "Invalid body parameter(s)",
+           "errors" => %{"page" => %{"page" => ["is invalid"], "page_size" => ["is invalid"]}}
+         }}
       ]
 
       Enum.each(param_tests, fn {params, expected_result} ->

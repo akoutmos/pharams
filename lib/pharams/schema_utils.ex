@@ -14,6 +14,7 @@ defmodule Pharams.SchemaUtils do
 
     [
       "embeds_many #{inspect(sub_schema_name)}, #{module_name}, primary_key: false do",
+      "@moduledoc false",
       Utils.generate_basic_field_schema_definitions(block_contents, caller),
       Utils.generate_group_field_schema_definitions(block_contents, caller),
       "end"
@@ -32,6 +33,7 @@ defmodule Pharams.SchemaUtils do
 
     [
       "embeds_one #{inspect(sub_schema_name)}, #{module_name}, primary_key: false do",
+      "@moduledoc false",
       Utils.generate_basic_field_schema_definitions(block_contents, caller),
       Utils.generate_group_field_schema_definitions(block_contents, caller),
       "end"
